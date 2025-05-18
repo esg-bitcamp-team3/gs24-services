@@ -1,0 +1,20 @@
+[project]
+name = "market-service"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "tjdus",email = "dusml0277@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "django (>=5.2.1,<6.0.0)",
+    "djangorestframework (>=3.16.0,<4.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "gunicorn (>=21.2.0,<22.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

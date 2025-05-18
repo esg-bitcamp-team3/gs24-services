@@ -1,0 +1,82 @@
+# =====================
+# Python general
+# =====================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =====================
+# Django
+# =====================
+*.sqlite3
+*.log
+local_settings.py
+media/
+staticfiles/
+db.sqlite3
+
+# =====================
+# Poetry / venv
+# =====================
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+pip-wheel-metadata/
+
+# =====================
+# Environment variables
+# =====================
+.env
+.env.*
+
+# =====================
+# Coverage / test
+# =====================
+htmlcov/
+.coverage
+coverage.xml
+.pytest_cache/
+nosetests.xml
+test-results/
+
+# =====================
+# Type checking / linters
+# =====================
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+.pyright/
+pyrightconfig.json
+
+# =====================
+# IDE / Editor
+# =====================
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# =====================
+# Node (if frontend used)
+# =====================
+node_modules/
+npm-debug.log*
+
+# =====================
+# Docker
+# =====================
+*.pid
+*.tgz
+
+# =====================
+# Ignore service-specific private files
+# =====================
+services/**/__pycache__/
+services/**/.venv/
+services/**/.env
+services/**/db.sqlite3
+services/**/local_settings.py
+services/**/*.log
