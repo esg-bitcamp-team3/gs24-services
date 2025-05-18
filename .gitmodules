@@ -1,0 +1,3 @@
+[submodule "services/core_service"]
+	path = services/core_service
+	url = git@github.com:esg-bitcamp-team3/gs24-server.git
