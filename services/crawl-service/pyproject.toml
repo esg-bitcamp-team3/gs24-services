@@ -1,9 +1,33 @@
+#[project]
+#name = "crawl-service"
+#version = "0.1.0"
+#description = ""
+#authors = [
+#    {name = "tjdus",email = "dusml0277@gmail.com"}
+#]
+#readme = "README.md"
+#requires-python = ">=3.11"
+#dependencies = [
+#    "django (>=5.2.1,<6.0.0)",
+#    "djangorestframework (>=3.16.0,<4.0.0)",
+#    "selenium (>=4.32.0,<5.0.0)",
+#    "beautifulsoup4 (>=4.13.4,<5.0.0)",
+#    "gunicorn (>=21.2.0,<22.0.0)",
+#    "pymongo (>=4.7.2,<5.0.0)",
+#    "openpyxl (>=3.1.2,<4.0.0)",
+#    "transformers (>=4.41.1,<5.0.0)"
+#]
+#
+#[build-system]
+#requires = ["poetry-core>=2.0.0,<3.0.0"]
+#build-backend = "poetry.core.masonry.api"
+
 [project]
 name = "crawl-service"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "tjdus",email = "dusml0277@gmail.com"}
+    {name = "tjdus", email = "dusml0277@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.11"
@@ -12,7 +36,13 @@ dependencies = [
     "djangorestframework (>=3.16.0,<4.0.0)",
     "selenium (>=4.32.0,<5.0.0)",
     "beautifulsoup4 (>=4.13.4,<5.0.0)",
-    "gunicorn (>=21.2.0,<22.0.0)"
+    "gunicorn (>=21.2.0,<22.0.0)",
+    "pymongo (>=4.7.2,<5.0.0)",
+    "openpyxl (>=3.1.2,<4.0.0)",
+    "transformers (>=4.41.1,<5.0.0)",
+    "torch (>=2.3.0,<3.0.0)",
+    "scikit-learn (>=1.4.2,<2.0.0)",
+    "pandas (>=2.2.3,<3.0.0)"
 ]
 
 [build-system]
