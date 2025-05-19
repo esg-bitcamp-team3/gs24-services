@@ -43,6 +43,8 @@ COPY pyproject.toml poetry.lock /app/
 
 RUN poetry config virtualenvs.create false && poetry install --only main --no-root
 
+RUN pip install openpyxl
+
 # copy project
 COPY . /app
 

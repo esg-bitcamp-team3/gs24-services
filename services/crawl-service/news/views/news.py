@@ -12,6 +12,85 @@ from selenium.webdriver.common.by import By
 from datetime import datetime
 import json
 
+# MongoDB연결 및 전처리 하는 부분 -------------------------------------------
+from pymongo import MongoClient
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+import pandas as pd
+import re
+
+#MongoDB 연결
+client = MongoClient("mongodb+srv://jinpang97:MONGOsj!0122@cluster0.bxnwcsi.mongodb.net/ESG?retryWrites=true&w=majority")
+db = client["ESG"]
+collection = db["preprocessing"]
+
+#키워드 불러오기
+keyword_df = pd.read_excel("/app/esg_keywords.xlsx")
+e_keywords = set(keyword_df['Environmental'].dropna().str.replace(" ", "").str.lower())
+s_keywords = set(keyword_df['Social'].dropna().str.replace(" ", "").str.lower())
+g_keywords = set(keyword_df['Governance'].dropna().str.replace(" ", "").str.lower())
+
+#KoELECTRA 모델 로드
+model_name = "monologg/koelectra-base-finetuned-nsmc"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
+
+# 문장 나누기
+def split_into_sentences(text):
+    return [s.strip() for s in re.split(r'(?<=[.!?])\s+', text) if s.strip()]
+
+# 감성 분석
+def classify_sentiment(text):
+    inputs = tokenizer(text, padding=True, truncation=True, max_length=64, return_tensors='pt')
+    inputs = {key: val.to(device) for key, val in inputs.items()}
+    with torch.no_grad():
+        logits = model(**inputs).logits
+        prediction = torch.argmax(logits, dim=1).item()
+    return prediction
+
+# 전체 전처리 및 MongoDB 저장
+def process_and_store(news_list):
+    for article in news_list:
+        title = article['title']
+        content = article['content']
+        date = article['date']
+        company = article.get('company', 'Unknown')
+
+        # 문장 분리
+        content_sents = split_into_sentences(content)
+        title_sents = split_into_sentences(title)
+
+        # 감성 점수
+        content_scores = [classify_sentiment(s) for s in (content_sents[:3] + content_sents[-3:] if len(content_sents) >= 4 else content_sents)]
+        title_scores = [classify_sentiment(s) for s in title_sents]
+
+        content_avg = sum(content_scores) / len(content_scores) if content_scores else 0
+        title_avg = sum(title_scores) / len(title_scores) if title_scores else 0
+
+        # 키워드 기반 분류
+        text_combined = (title + content).lower().replace(" ", "")
+        categories = []
+        if any(k in text_combined for k in e_keywords): categories.append("E")
+        if any(k in text_combined for k in s_keywords): categories.append("S")
+        if any(k in text_combined for k in g_keywords): categories.append("G")
+        if not categories: categories.append("Uncategorized")
+
+        # MongoDB에 저장
+        for cat in categories:
+            doc = {
+                "company": company,
+                "title": title,
+                "content": content,
+                "date": date,
+                "title_sentiment": title_avg,
+                "content_sentiment": content_avg,
+                "category": cat
+            }
+            collection.insert_one(doc)
+
+# ----------------------------------------------------------------------------------------
 # Set up Chrome options
 chrome_options = Options()
 chrome_options.add_argument('--headless')
@@ -28,7 +107,7 @@ class CompanyNewsView(APIView):
         if not company_name:
             return Response({"error": "company_name parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        search_url = f"https://search.naver.com/search.naver?ssc=tab.news.all&query={company_name}&sm=tab_opt&sort=0&photo=0&field=0&pd=-1&ds=2025.05.02&de=2025.05.02&docid=&related=0&mynews=1&office_type=1&office_section_code=1&news_office_checked=&nso=&is_sug_officeid=0&office_category=0&service_area="
+        search_url = f"https://search.naver.com/search.naver?query={company_name}&where=news&sm=tab_opt&sort=0&photo=0&field=0&pd=3&ds=2025.05.02&de=2025.05.10"
 
         driver.get(search_url)
         time.sleep(3)
@@ -51,6 +130,13 @@ class CompanyNewsView(APIView):
                 news_data.append({"title": title, "content": content, "date": date})
 
         return Response(news_data)
+        #전처리 시키고 DB에 저장하기
+        # process_and_store(news_data)
+        # return Response({
+        #     "message": f"{company_name} 관련 뉴스 {len(news_data)}건 크롤링 및 저장 완료",
+        #     "saved_count": len(news_data)
+        # })
+        #--------------------------------------------------------------------
 
     def get_article_content(self, link):
         driver.get(link)
