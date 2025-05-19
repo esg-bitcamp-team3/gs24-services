@@ -28,7 +28,8 @@ class CompanyNewsView(APIView):
         if not company_name:
             return Response({"error": "company_name parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        search_url = f"https://search.naver.com/search.naver?ssc=tab.news.all&query={company_name}&sm=tab_opt&sort=0&photo=0&field=0&pd=-1&ds=2025.05.02&de=2025.05.02&docid=&related=0&mynews=1&office_type=1&office_section_code=1&news_office_checked=&nso=&is_sug_officeid=0&office_category=0&service_area="
+        # search_url = f"https://search.naver.com/search.naver?ssc=tab.news.all&query={company_name}&sm=tab_opt&sort=0&photo=0&field=0&pd=-1&ds=2025.05.02&de=2025.05.02&docid=&related=0&mynews=1&office_type=1&office_section_code=1&news_office_checked=&nso=&is_sug_officeid=0&office_category=0&service_area="
+        search_url = f"https://search.naver.com/search.naver?ssc=tab.news.all&query={company_name}&sm=tab_opt&sort=0&photo=0&field=0&pd=3&ds=2025.05.02&de=2025.05.02"
 
         driver.get(search_url)
         time.sleep(3)
