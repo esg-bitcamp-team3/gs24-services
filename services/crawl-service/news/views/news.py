@@ -24,9 +24,9 @@ try:
     client = MongoClient("mongodb+srv://jinpang97:MONGOsj!0122@cluster0.bxnwcsi.mongodb.net/ESG?retryWrites=true&w=majority")
     db = client["ESG"]
     collection = db["preprocessing"]
-    print("✅ MongoDB 연결 성공")
+    print("MongoDB 연결 성공")
 except Exception as e:
-    print(f"❌ MongoDB 연결 실패: {e}")
+    print(f"MongoDB 연결 실패: {e}")
 
 # 키워드 불러오기
 try:
@@ -35,9 +35,9 @@ try:
     e_keywords = set(keyword_df['Environmental'].dropna().str.replace(" ", "").str.lower())
     s_keywords = set(keyword_df['Social'].dropna().str.replace(" ", "").str.lower())
     g_keywords = set(keyword_df['Governance'].dropna().str.replace(" ", "").str.lower())
-    print("✅ 키워드 로딩 성공")
+    print("키워드 로딩 성공")
 except Exception as e:
-    print(f"❌ 키워드 파일 로딩 실패: {e}")
+    print(f"키워드 파일 로딩 실패: {e}")
 
 # 모델 로딩
 print("🤖 KoELECTRA 모델 로드 시작")
@@ -46,7 +46,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
-print("✅ 모델 로드 완료")
+print("모델 로드 완료")
 
 def split_into_sentences(text):
     return [s.strip() for s in re.split(r'(?<=[.!?])\s+', text) if s.strip()]
@@ -60,7 +60,7 @@ def classify_sentiment(text):
     return prediction
 
 def process_and_store(news_list, company_name):
-    print("🧪 전처리 및 저장 시작")
+    print("전처리 및 저장 시작")
     for article in news_list:
         try:
             title = article['title']
@@ -95,10 +95,10 @@ def process_and_store(news_list, company_name):
                     "category": cat
                 }
                 collection.insert_one(doc)
-            print(f"✅ 저장 완료: {title[:30]}...")
+            print(f"저장 완료: {title[:30]}...")
 
         except Exception as e:
-            print(f"❌ 저장 중 에러 발생: {e}")
+            print(f"저장 중 에러 발생: {e}")
 
 # 크롬 옵션 설정
 chrome_options = Options()
@@ -116,8 +116,8 @@ class CompanyNewsView(APIView):
             if not company_name:
                 return Response({"error": "company_name parameter is required"}, status=400)
 
-            print(f"📥 요청 받음: {company_name}")
-            search_url = f"https://search.naver.com/search.naver?query={company_name}&where=news&pd=3&ds=2025.05.02&de=2025.05.10"
+            print(f"요청 받음: {company_name}")
+            search_url = f"https://search.naver.com/search.naver?query={company_name}&where=news&pd=3&ds=2025.05.01&de=2025.05.20"
             driver.get(search_url)
             time.sleep(3)
 
@@ -135,13 +135,13 @@ class CompanyNewsView(APIView):
                 if title and content:
                     news_data.append({"title": title, "content": content, "date": date})
 
-            print("📝 뉴스 데이터 수집 완료")
+            print("뉴스 데이터 수집 완료")
             process_and_store(news_data, company_name)
-            print("✅ 전체 저장 완료")
+            print("전체 저장 완료")
             return Response({"message": f"{company_name} 뉴스 {len(news_data)}건 저장 완료"}, status=200)
 
         except Exception as e:
-            print(f"🔥 API 에러 발생: {e}")
+            print(f"API 에러 발생: {e}")
             return Response({"error": str(e)}, status=500)
 
     def get_article_content(self, link):
@@ -164,5 +164,5 @@ class CompanyNewsView(APIView):
 
             return title, content, date
         except Exception as e:
-            print(f"❌ 기사 파싱 실패: {e}")
+            print(f"기사 파싱 실패: {e}")
             return '', '', ''

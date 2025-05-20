@@ -121,3 +121,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MONGO_URI  = "mongodb+srv://...@cluster0.mongodb.net/ESG?retryWrites=true&w=majority"
+MONGO_DB   = "ESG"
+MONGO_COLL = "preprocessing"
+

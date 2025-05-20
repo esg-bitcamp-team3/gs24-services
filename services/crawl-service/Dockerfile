@@ -45,6 +45,10 @@ RUN poetry config virtualenvs.create false && poetry install --only main --no-ro
 
 RUN pip install openpyxl
 
+RUN pip install matplotlib
+
+RUN pip install seaborn matplotlib
+
 # copy project
 COPY . /app
 
