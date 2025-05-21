@@ -1,12 +1,8 @@
-# crawl-service/news/views/prediction.py
-
-# import os
 import os, sys
 
 # ───────────────────────────────────────────────────────────────
 # 1) Make sure /app is on Python’s import path so that
 #    Python can find preprocessing_service/
-# ───────────────────────────────────────────────────────────────
 HERE = os.path.dirname(__file__)                  # …/news/views
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))  # /app
 sys.path.insert(0, ROOT)
@@ -35,6 +31,16 @@ MODEL_CONFIG = {
         "cls": ESG_CNN,
         "weight": os.path.join(WEIGHT_DIR, "E_predictor.pth"),
         "field": "e_score"
+    },
+    "S": {
+        "cls": ESG_CNN,
+        "weight": os.path.join(WEIGHT_DIR, "S_predictor.pth"),
+        "field": "s_score"
+    },
+    "G": {
+        "cls": ESG_CNN,
+        "weight": os.path.join(WEIGHT_DIR, "G_predictor.pth"),
+        "field": "g_score"
     }
 }
 

@@ -6,12 +6,12 @@ from model import ESG_CNN  # 불러온 모델 정의
 # DB 설정
 MONGO_URI  = "mongodb+srv://jinpang97:MONGOsj!0122@cluster0.bxnwcsi.mongodb.net/ESG?retryWrites=true&w=majority"
 client     = MongoClient(MONGO_URI)
-docs       = list(client["ESG"]["preprocessing"].find({"company_name":"인디에프"}))
+docs       = list(client["ESG"]["preprocessing"].find({"company_name":"명문제약"}))
 
 # 저장 DB 설정
 SAVE_MONGO_URI = "mongodb+srv://jinpang97:MONGOsj!0122@cluster0.bxnwcsi.mongodb.net/ESG?retryWrites=true&w=majority"
 client_save = MongoClient(SAVE_MONGO_URI)
-docs_save = list(client_save["ESG"]["predictRatings"].find({"company_name":"인디에프"}))
+docs_save = list(client_save["ESG"]["predictRatings"].find({"company_name":"명문제약"}))
 
 #오늘 날짜 저장
 today_date = datetime.today().isoformat()
@@ -47,23 +47,23 @@ x_tensor = torch.tensor(monthly, dtype=torch.float32).view(1,12,2)
 
 # 2) 모델 로드
 model = ESG_CNN()
-model.load_state_dict(torch.load("E_predictor.pth", map_location="cpu"))
+model.load_state_dict(torch.load("S_predictor.pth", map_location="cpu"))
 model.eval()
 
 # 3) 예측
 with torch.no_grad():
     out   = model(x_tensor)
     grade = torch.argmax(out, dim=1).item() + 1
-    print("Predicted E-grade:", grade)
+    print("Predicted S-grade:", grade)
 
 result = {
-    "company_name" : "인디에프",
+    "company_name" : "명문제약",
     "date"    : today_date,
-    "e_score" : grade
+    "s_score" : grade
 }
 
 try:
-    client_save["ESG"]["predictRatings"].update_one({"company_name": "인디에프"}, {"$set": result}, upsert=True)
+    client_save["ESG"]["predictRatings"].update_one({"company_name": "명문제약"}, {"$set": result}, upsert=True)
     print(f"✅ 저장 성공")
 except Exception as e:
     print(f"❌ 저장 실패: {e}")

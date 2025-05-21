@@ -47,19 +47,19 @@ x_tensor = torch.tensor(monthly, dtype=torch.float32).view(1,12,2)
 
 # 2) 모델 로드
 model = ESG_CNN()
-model.load_state_dict(torch.load("E_predictor.pth", map_location="cpu"))
+model.load_state_dict(torch.load("G_predictor.pth", map_location="cpu"))
 model.eval()
 
 # 3) 예측
 with torch.no_grad():
     out   = model(x_tensor)
     grade = torch.argmax(out, dim=1).item() + 1
-    print("Predicted E-grade:", grade)
+    print("Predicted G-grade:", grade)
 
 result = {
     "company_name" : "인디에프",
     "date"    : today_date,
-    "e_score" : grade
+    "g_score" : grade
 }
 
 try:

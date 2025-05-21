@@ -20,7 +20,7 @@ import re
 
 # MongoDB 연결
 try:
-    print("🔌 MongoDB 연결 시도")
+    print("MongoDB 연결 시도")
     client = MongoClient("mongodb+srv://jinpang97:MONGOsj!0122@cluster0.bxnwcsi.mongodb.net/ESG?retryWrites=true&w=majority")
     db = client["ESG"]
     collection = db["preprocessing"]
@@ -30,7 +30,7 @@ except Exception as e:
 
 # 키워드 불러오기
 try:
-    print("📄 키워드 파일 로딩 시도")
+    print("키워드 파일 로딩 시도")
     keyword_df = pd.read_excel("/app/esg_keywords.xlsx")
     e_keywords = set(keyword_df['Environmental'].dropna().str.replace(" ", "").str.lower())
     s_keywords = set(keyword_df['Social'].dropna().str.replace(" ", "").str.lower())
@@ -40,7 +40,7 @@ except Exception as e:
     print(f"키워드 파일 로딩 실패: {e}")
 
 # 모델 로딩
-print("🤖 KoELECTRA 모델 로드 시작")
+print("KoELECTRA 모델 로드 시작")
 model_name = "monologg/koelectra-base-finetuned-nsmc"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
@@ -117,7 +117,7 @@ class CompanyNewsView(APIView):
                 return Response({"error": "company_name parameter is required"}, status=400)
 
             print(f"요청 받음: {company_name}")
-            search_url = f"https://search.naver.com/search.naver?query={company_name}&where=news&pd=3&ds=2025.05.01&de=2025.05.20"
+            search_url = f"https://search.naver.com/search.naver?query={company_name}&where=news&pd=3&ds=2025.05.01&de=2025.05.21"
             driver.get(search_url)
             time.sleep(3)
 
@@ -127,7 +127,7 @@ class CompanyNewsView(APIView):
 
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             links = [a['href'] for a in soup.find_all('a', href=True) if 'news.naver.com' in a['href']]
-            print(f"🔗 기사 링크 수집 완료: {len(links)}개")
+            print(f"기사 링크 수집 완료: {len(links)}개")
 
             news_data = []
             for link in links:
