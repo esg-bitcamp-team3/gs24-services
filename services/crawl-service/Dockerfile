@@ -49,6 +49,8 @@ RUN pip install matplotlib
 
 RUN pip install seaborn matplotlib
 
+RUN pip install kafka-python
+
 # copy project
 COPY . /app
 
