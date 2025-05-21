@@ -14,7 +14,8 @@ dependencies = [
     "konlpy (>=0.6.0,<0.7.0)",
     "transformers (>=4.51.3,<5.0.0)",
     "torch (>=2.7.0,<3.0.0)",
-    "gunicorn (>=21.2.0,<22.0.0)"
+    "gunicorn (>=21.2.0,<22.0.0)",
+    "django-cors-headers (>=4.7.0,<5.0.0)"
 ]
 
 
