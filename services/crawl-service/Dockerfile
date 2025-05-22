@@ -62,5 +62,5 @@ COPY . /app
 # run at port 8000
 EXPOSE 8000
 
-CMD ["poetry", "run", "gunicorn", "crawl_service.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "180"]
+CMD ["poetry", "run", "gunicorn", "crawl_service.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "9", "--timeout", "3600"]
 

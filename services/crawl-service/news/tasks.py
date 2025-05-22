@@ -100,10 +100,19 @@ def process_and_store(news_list, company_name):
 
 def crawl_and_process_news(company_name):
     chrome_options = Options()
+    chrome_options = Options()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    chrome_options.add_argument('User-Agent=Mozilla/5.0 ...')
+    chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--remote-debugging-port=9222')
+    chrome_options.add_argument('--disable-software-rasterizer')
+    chrome_options.add_argument('--disable-dev-tools')
+    chrome_options.add_argument('--disable-features=VizDisplayCompositor')
+    chrome_options.add_argument('--user-data-dir=/tmp/chrome-user-data')
+    chrome_options.add_argument('--data-path=/tmp/chrome-data')
+    chrome_options.add_argument('--homedir=/tmp')
+    chrome_options.add_argument('--disk-cache-dir=/tmp/cache-dir')
     service = Service('/usr/bin/chromedriver')
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
