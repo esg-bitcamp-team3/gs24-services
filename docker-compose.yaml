@@ -25,8 +25,50 @@ services:
     container_name: gs-crawl-service
     env_file:
       - ./services/crawl-service/.env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
     ports:
       - "8001:8000"
+    depends_on:
+      - mongo
+      - redis
+
+  celery_worker: # Celery 워커 서비스 추가
+    build:
+      context: ./services/crawl-service
+    container_name: gs-celery-worker
+    command: celery -A crawl_service worker --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+      - crawl-service
+      - kafka
+    volumes:
+      - .:/app/crawl-service
+    restart: always
+
+  kafka_consumer:
+    build:
+      context: ./services/crawl-service
+    container_name: gs-kafka-consumer
+    command: python news/views/kafka_consumer.py
+    depends_on:
+      - kafka
+      - redis
+      - mongo
+      - crawl-service
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=crawl_service.settings
+      - PYTHONPATH=/app/crawl-service
+    volumes:
+      - ./services/crawl-service:/app/crawl-service
+    restart: always
 
   market-service:
     build:
@@ -75,6 +117,24 @@ services:
       - search-service
       - finance-service
       - core_service
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
 
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 volumes:
   mongo_data:

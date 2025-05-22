@@ -17,7 +17,7 @@ ENV PYTHONUNBUFFERED=1 \
     VENV_PATH="/opt/pysetup/.venv"
 
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
+    && apt-get install -y --no-install-recommends \
         curl \
         build-essential \
         chromium \
@@ -31,10 +31,15 @@ RUN apt-get update \
         libgtk-3-0 \
         libx11-xcb1 \
         libxcb1 \
-        libdbus-1-3
+        libdbus-1-3 \
+        libssl-dev \
+        libffi-dev \
+        openssl \
+    && rm -rf /var/lib/apt/lists/*
+
 
 # install poetry to manage python dependencies
-RUN curl -sSL https://install.python-poetry.org | python3 - --version 2.1.0
+RUN curl -sSL https://install.python-poetry.org | python3 - --version 2.0.1
 
 ENV PATH="$POETRY_HOME/bin:$PATH"
 

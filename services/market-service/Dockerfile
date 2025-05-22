@@ -16,10 +16,10 @@ ENV PYTHONUNBUFFERED=1 \
     PYSETUP_PATH="/opt/pysetup" \
     VENV_PATH="/opt/pysetup/.venv"
 
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
-        curl \
-        build-essential
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl build-essential ca-certificates && \
+    update-ca-certificates && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # install poetry to manage python dependencies
 RUN curl -sSL https://install.python-poetry.org | python3 - --version 2.1.0
@@ -37,4 +37,4 @@ COPY . /app
 # run at port 8000
 EXPOSE 8000
 
-CMD ["poetry", "run", "gunicorn", "market_service.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["poetry", "run", "gunicorn", "market_service.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "360"]
